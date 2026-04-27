@@ -12,11 +12,13 @@ if not game:IsLoaded() then
     game.Loaded:Wait()
 end
 
---// Queue script on teleport (auto execute)
+--// Auto execute on teleport
+local scriptURL = "https://raw.githubusercontent.com/JustSumFemmy/ilovegio/main/script.lua"
+
 if syn and syn.queue_on_teleport then
-    syn.queue_on_teleport(game:HttpGet("YOUR SCRIPT HERE"))
+    syn.queue_on_teleport(game:HttpGet(scriptURL))
 elseif queue_on_teleport then
-    queue_on_teleport(game:HttpGet("YOUR SCRIPT HERE"))
+    queue_on_teleport(game:HttpGet(scriptURL))
 end
 
 --// Safe invoke
@@ -34,20 +36,21 @@ local function rejoin()
     TeleportService:Teleport(getgenv().PlaceId, LocalPlayer)
 end
 
---// Detect kick / disconnect
-LocalPlayer.OnTeleport:Connect(function(State)
-    if State == Enum.TeleportState.Failed then
+--// Detect failed teleports
+LocalPlayer.OnTeleport:Connect(function(state)
+    if state == Enum.TeleportState.Failed then
         rejoin()
     end
 end)
 
+--// Detect kicks / errors
 game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
     if child.Name == "ErrorPrompt" then
         rejoin()
     end
 end)
 
---// Main logic
+--// Main
 if game.PlaceId ~= getgenv().PlaceId then
     local winnerRemote = workspace:FindFirstChild("Winner")
     safeInvoke(winnerRemote)
